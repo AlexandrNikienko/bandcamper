@@ -3,12 +3,15 @@ import { useData } from '../context/DataContext';
 import '../styles/ReleasesList.css';
 
 export const ReleasesList: React.FC = () => {
-  const { releases, tracks } = useData();
+  const { releases, tracks, summary, bundles } = useData();
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [bundlesExpanded, setBundlesExpanded] = useState(false);
 
   const toggle = (title: string) => {
     setExpanded(prev => ({ ...prev, [title]: !prev[title] }));
   };
+
+  const toggleBundles = () => setBundlesExpanded(v => !v);
 
   // Group tracks by release
   const tracksByRelease: Record<string, Array<any>> = {};
@@ -25,10 +28,43 @@ export const ReleasesList: React.FC = () => {
   return (
     <div className="releases-container">
       <div className="releases-header">
-        <h2>📚 Releases</h2>
+        <h2>Releases</h2>
       </div>
 
       <div className="releases-grid">
+        {summary?.bundleRevenue > 0 && (
+        <div className="release-card" onClick={toggleBundles} role="button" tabIndex={0}>
+          <div className="release-header">
+            <div className="release-info">
+                <div className="release-title">Full Discography (bundles)</div>
+            </div>
+
+            <div className="release-stats">
+              <div className="release-revenue">
+                <span className="release-sales">{summary.bundleSales || 0} sales</span> · €{summary.bundleRevenue?.toFixed ? summary.bundleRevenue.toFixed(2) : Number(summary.bundleRevenue || 0).toFixed(2)}
+                </div>
+            </div>
+          </div>
+
+          {bundlesExpanded && (
+            <div className="tracks-section">
+              <div className="tracks-list">
+                {(bundles || []).slice().map((b: any, idx: number) => (
+                  <div key={`${b.title}-${idx}`} className="track-item">
+                    <div className="track-title">{b.title}</div>
+                    <div className="track-stats">{b.quantity} · €{Number(b.revenue).toFixed(2)}</div>
+                  </div>
+                ))}
+
+                {(!(bundles || []).length) && (
+                  <div className="tracks-empty">No bundle sales recorded.</div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
         {releases.slice().sort((a, b) => b.totalRevenue - a.totalRevenue).map(rel => (
           <div key={rel.title} className="release-card" onClick={() => toggle(rel.title)}>
             <div className="release-header">
@@ -55,11 +91,9 @@ export const ReleasesList: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="tracks-label">Tracks</div>
-
                 <div className="tracks-list">
                   {((tracksByRelease[rel.title] || []).slice().sort((a, b) => b.sales - a.sales)).map((t, idx) => (
-                    <div key={`€{t.title}-€{idx}`} className="track-item">
+                    <div key={`${t.title}-${idx}`} className="track-item">
                       <div className="track-title">{t.title}</div>
 
                       <div className="track-stats">{t.sales} sales · €{Number(t.revenue).toFixed(2)}</div>

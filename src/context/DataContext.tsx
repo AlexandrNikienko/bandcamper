@@ -39,20 +39,21 @@ function parseCurrencyNumber(value: any) {
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [releases, setReleases] = useState<any[]>([]);
   const [tracks, setTracks] = useState<any[]>([]);
+  const [bundles, setBundles] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>(null);
 
-  const rebuildSummary = (releasesArr: any[], tracksArr: any[], overallNetRevenue?: number) => {
-    const totalSales = releasesArr.reduce((s, r) => s + (r.totalSales || 0), 0);
+  const rebuildSummary = (releasesArr: any[], tracksArr: any[], overallNetRevenue?: number, bundleSales: number = 0, bundleRevenue: number = 0) => {
+    const totalSales = releasesArr.reduce((s, r) => s + (r.totalSales || 0), 0) + (bundleSales || 0);
     // Prefer the overall net revenue accumulator if provided (sum of Net revenue column)
     const totalRevenue = typeof overallNetRevenue === 'number'
       ? overallNetRevenue
-      : releasesArr.reduce((s, r) => s + (r.totalRevenue || 0), 0);
+      : releasesArr.reduce((s, r) => s + (r.totalRevenue || 0), 0) + (bundleRevenue || 0);
     const releaseCount = releasesArr.length;
     const trackCount = tracksArr.length;
     const topRelease = releasesArr.slice().sort((a, b) => b.totalSales - a.totalSales)[0] || null;
     const topTrack = tracksArr.slice().sort((a, b) => b.sales - a.sales)[0] || null;
 
-    setSummary({ totalSales, totalRevenue, releaseCount, trackCount, topRelease, topTrack });
+    setSummary({ totalSales, totalRevenue, releaseCount, trackCount, topRelease, topTrack, bundleSales, bundleRevenue });
   };
 
   const processCSV = async (file: File) => {
@@ -68,6 +69,9 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const trackMap = new Map<string, Track>();
 
           let totalNetRevenue = 0;
+          let bundleSalesTotal = 0;
+          let bundleRevenueTotal = 0;
+          const bundleMap = new Map<string, { title: string; artist?: string; quantity: number; revenue: number }>();
           for (const record of data) {
             // Use Bandcamp CSV canonical column names when present
             const itemName = record['Item name'] || record['Item Name'] || record['Item Title'] || record['Item title'] || record['Item'] || '';
@@ -89,8 +93,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             const itemType = itemTypeRaw;
 
-            // Skip bundle items from release aggregation, but keep their revenue in overall total
-            if (itemType === 'bundle') continue;
+            // If bundle, accumulate bundle totals and skip release aggregation
+            if (itemType === 'bundle') {
+              bundleSalesTotal += quantity;
+              bundleRevenueTotal += revenue;
+              const title = String(itemName).trim() || 'Unknown Bundle';
+              const existing = bundleMap.get(title);
+              if (existing) {
+                existing.quantity += quantity;
+                existing.revenue += revenue;
+              } else {
+                bundleMap.set(title, { title, artist: String(artistName) || 'Unknown Artist', quantity, revenue });
+              }
+              continue;
+            }
 
             // Determine release title and track title based on item type
             let releaseTitle = '';
@@ -158,10 +174,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
           const releasesArr = Array.from(releaseMap.values());
           const tracksArr = Array.from(trackMap.values());
+          const bundlesArr = Array.from(bundleMap.values());
 
           setReleases(releasesArr);
           setTracks(tracksArr);
-          rebuildSummary(releasesArr, tracksArr, totalNetRevenue);
+          setBundles(bundlesArr);
+          rebuildSummary(releasesArr, tracksArr, totalNetRevenue, bundleSalesTotal, bundleRevenueTotal);
 
           resolve({ releasesProcessed: releasesArr.length, tracksProcessed: tracksArr.length });
         },
@@ -177,7 +195,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <DataContext.Provider value={{ releases, tracks, summary, processCSV, clearData }}>
+    <DataContext.Provider value={{ releases, tracks, bundles, summary, processCSV, clearData }}>
       {children}
     </DataContext.Provider>
   );

@@ -28,4 +28,6 @@ export interface SalesSummary {
   trackCount: number;
   topRelease: Release | null;
   topTrack: Track | null;
+  bundleSales?: number;
+  bundleRevenue?: number;
 }

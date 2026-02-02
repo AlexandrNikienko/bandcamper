@@ -24,7 +24,7 @@ export const Summary: React.FC = () => {
           <div className="stat-icon">💰</div>
           <div className="stat-content">
             <div className="stat-label">Total Revenue</div>
-            <div className="stat-value">${summary.totalRevenue.toFixed(2)}</div>
+            <div className="stat-value">€{summary.totalRevenue.toFixed(2)}</div>
           </div>
         </div>
 
