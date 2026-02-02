@@ -28,21 +28,21 @@ export const Summary: React.FC = () => {
           </div>
         </div>
 
-        <div className="stat-card">
+        {/* <div className="stat-card">
           <div className="stat-icon">💿</div>
           <div className="stat-content">
             <div className="stat-label">Releases</div>
             <div className="stat-value">{summary.releaseCount}</div>
           </div>
-        </div>
+        </div> */}
 
-        <div className="stat-card">
+        {/* <div className="stat-card">
           <div className="stat-icon">🎵</div>
           <div className="stat-content">
             <div className="stat-label">Tracks</div>
             <div className="stat-value">{summary.trackCount}</div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* <div className="highlights">

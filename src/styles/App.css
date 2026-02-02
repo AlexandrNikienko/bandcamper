@@ -103,6 +103,13 @@
   font-style: italic;
 }
 
+.bandcamper {
+  color: #0CACD7;
+  position: relative;
+  top: -7px;
+  left: 2px;
+}
+
 @media (max-width: 768px) {
   .summary-grid {
     grid-template-columns: 1fr 1fr;

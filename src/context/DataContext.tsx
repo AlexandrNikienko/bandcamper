@@ -62,7 +62,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         header: true,
         skipEmptyLines: true,
         dynamicTyping: true,
-        complete: (results) => {
+        complete: (results: any) => {
           const data = results.data as any[];
 
           const releaseMap = new Map<string, Release>();
