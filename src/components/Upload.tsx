@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
+import { UploadCloud, Folder } from 'lucide-react';
 import '../styles/Upload.css';
 
 export const Upload: React.FC = () => {
@@ -29,14 +30,15 @@ export const Upload: React.FC = () => {
   return (
     <div className="upload-container">
       <div className="upload-box">
-        <h2>📤 Upload Bandcamp Sales Report</h2>
+        <UploadCloud size={40} /> 
+        <h2>Upload Bandcamp Sales Report</h2>
         <p className="upload-description">
           Download your sales report from the Bandcamp Tools page as a CSV file and upload it here. Parsing happens locally in your browser.
         </p>
 
         <label className="file-input-label">
           <span className={isLoading ? 'btn-disabled' : 'btn-primary'}>
-            {isLoading ? '⏳ Processing...' : '📁 Choose CSV File'}
+            {isLoading ? '⏳ Processing...' : <><Folder size={14} style={{ marginRight: 8 }} /> Choose CSV File</>}
           </span>
           <input type="file" accept=".csv" onChange={handleFileChange} disabled={isLoading} style={{ display: 'none' }} />
         </label>

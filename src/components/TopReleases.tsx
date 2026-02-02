@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../styles/Charts.css';
 import { useData } from '../context/DataContext';
+import { TrendingUp } from 'lucide-react';
 
 export const TopReleases: React.FC = () => {
   const { releases } = useData();
@@ -22,7 +23,7 @@ export const TopReleases: React.FC = () => {
   return (
     <div className="chart-container">
       <div className="chart-header">
-        <h2>📊 Top Releases</h2>
+        <h2><TrendingUp size={20} /> Top Releases</h2>
         <div className="sort-controls">
           <label>Sort by:</label>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'sales' | 'revenue')}>

@@ -133,6 +133,7 @@
 .tracks-list {
   display: grid;
   gap: 0.375rem;
+  margin-inline: 1rem;
 }
 
 .track-item {
@@ -177,7 +178,7 @@
   border-left: 3px solid #764ba2;
   padding: 0.75rem;
   border-radius: 6px;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;

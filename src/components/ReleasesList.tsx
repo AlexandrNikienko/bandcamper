@@ -91,6 +91,16 @@ export const ReleasesList: React.FC = () => {
                   </div>
                 </div>
 
+                {(tracksByRelease[rel.title] || []).length > 0 && (
+                  <div className="tracks-total">
+                    <div className="tracks-label">Tracks sales total</div>
+
+                    <div className="track-stats">
+                      {(tracksByRelease[rel.title] || []).reduce((sum, t) => sum + t.sales, 0)} sales · €{((tracksByRelease[rel.title] || []).reduce((sum, t) => sum + Number(t.revenue), 0)).toFixed(2)}
+                    </div>
+                  </div>
+                )}
+
                 <div className="tracks-list">
                   {((tracksByRelease[rel.title] || []).slice().sort((a, b) => b.sales - a.sales)).map((t, idx) => (
                     <div key={`${t.title}-${idx}`} className="track-item">
@@ -105,15 +115,7 @@ export const ReleasesList: React.FC = () => {
                   )}
                 </div>
 
-                {(tracksByRelease[rel.title] || []).length > 0 && (
-                  <div className="tracks-total">
-                    <div className="tracks-label">Tracks total</div>
-
-                    <div className="track-stats">
-                      {(tracksByRelease[rel.title] || []).reduce((sum, t) => sum + t.sales, 0)} sales · €{((tracksByRelease[rel.title] || []).reduce((sum, t) => sum + Number(t.revenue), 0)).toFixed(2)}
-                    </div>
-                  </div>
-                )}
+                
               </div>
             )}
           </div>

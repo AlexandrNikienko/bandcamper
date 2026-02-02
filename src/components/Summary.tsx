@@ -1,5 +1,6 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
+import { TrendingUp, DollarSign, Disc, Music } from 'lucide-react';
 import '../styles/Summary.css';
 
 export const Summary: React.FC = () => {
@@ -13,7 +14,7 @@ export const Summary: React.FC = () => {
     <div className="summary-container">
       <div className="summary-grid">
         <div className="stat-card">
-          <div className="stat-icon">📈</div>
+          <div className="stat-icon"><TrendingUp size={40} /></div>
           <div className="stat-content">
             <div className="stat-label">Total Sales</div>
             <div className="stat-value">{summary.totalSales}</div>
@@ -21,7 +22,7 @@ export const Summary: React.FC = () => {
         </div>
 
         <div className="stat-card">
-          <div className="stat-icon">💰</div>
+          <div className="stat-icon"><DollarSign size={40} /></div>
           <div className="stat-content">
             <div className="stat-label">Total Revenue</div>
             <div className="stat-value">€{summary.totalRevenue.toFixed(2)}</div>

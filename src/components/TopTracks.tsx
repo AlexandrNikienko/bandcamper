@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import '../styles/Charts.css';
 import { useData } from '../context/DataContext';
+import { Music } from 'lucide-react';
 
 export const TopTracks: React.FC = () => {
   const { tracks } = useData();
@@ -22,7 +23,7 @@ export const TopTracks: React.FC = () => {
   return (
     <div className="chart-container">
       <div className="chart-header">
-        <h2>🎵 Top Tracks</h2>
+        <h2><Music size={20} /> Top Tracks</h2>
         <div className="sort-controls">
           <label>Sort by:</label>
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value as 'sales' | 'revenue')}>
