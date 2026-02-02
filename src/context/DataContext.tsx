@@ -41,9 +41,12 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [tracks, setTracks] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>(null);
 
-  const rebuildSummary = (releasesArr: any[], tracksArr: any[]) => {
+  const rebuildSummary = (releasesArr: any[], tracksArr: any[], overallNetRevenue?: number) => {
     const totalSales = releasesArr.reduce((s, r) => s + (r.totalSales || 0), 0);
-    const totalRevenue = releasesArr.reduce((s, r) => s + (r.totalRevenue || 0), 0);
+    // Prefer the overall net revenue accumulator if provided (sum of Net revenue column)
+    const totalRevenue = typeof overallNetRevenue === 'number'
+      ? overallNetRevenue
+      : releasesArr.reduce((s, r) => s + (r.totalRevenue || 0), 0);
     const releaseCount = releasesArr.length;
     const trackCount = tracksArr.length;
     const topRelease = releasesArr.slice().sort((a, b) => b.totalSales - a.totalSales)[0] || null;
@@ -64,6 +67,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const releaseMap = new Map<string, Release>();
           const trackMap = new Map<string, Track>();
 
+          let totalNetRevenue = 0;
           for (const record of data) {
             // Use Bandcamp CSV canonical column names when present
             const itemName = record['Item name'] || record['Item Name'] || record['Item Title'] || record['Item title'] || record['Item'] || '';
@@ -78,9 +82,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const netRevenue = parseCurrencyNumber(record['Net revenue'] ?? record['Net Revenue'] ?? record['Net'] ?? record['Net amount']);
             const revenue = netRevenue; // do not fallback to gross; treat missing net as 0
 
+            // accumulate overall Net revenue (sum of Net revenue column) regardless of item type
+            totalNetRevenue += revenue;
+
             if (!itemName && !containerName) continue;
 
             const itemType = itemTypeRaw;
+
+            // Skip bundle items from release aggregation, but keep their revenue in overall total
+            if (itemType === 'bundle') continue;
 
             // Determine release title and track title based on item type
             let releaseTitle = '';
@@ -88,10 +98,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
             if (itemType === 'track') {
               // Tracks: containerName should point to release
-              releaseTitle = String(containerName).trim() || normalizeItemTitle(String(itemName)).releaseTitle;
-              trackTitle = normalizeItemTitle(String(itemName)).trackTitle;
-            } else if (itemType === 'album' || itemType === 'bundle') {
-              // Albums and bundles: the item itself represents a release-level sale
+              releaseTitle = String(containerName).trim();
+              trackTitle = String(itemName).trim();
+            } else if (itemType === 'album') {
+              // Albums: the item itself represents a release-level sale
               releaseTitle = String(itemName || containerName).trim();
               // For album rows, there may be no track title
               trackTitle = '';
@@ -122,8 +132,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             rel.totalSales += quantity;
             rel.totalRevenue += revenue;
 
-            // Track album-only sales (from 'album' or 'bundle' type rows)
-            if (itemType === 'album' || itemType === 'bundle') {
+            // Track album-only sales (from 'album' type rows)
+            if (itemType === 'album') {
               rel.albumSales += quantity;
               rel.albumRevenue += revenue;
             }
@@ -151,7 +161,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
           setReleases(releasesArr);
           setTracks(tracksArr);
-          rebuildSummary(releasesArr, tracksArr);
+          rebuildSummary(releasesArr, tracksArr, totalNetRevenue);
 
           resolve({ releasesProcessed: releasesArr.length, tracksProcessed: tracksArr.length });
         },

@@ -29,6 +29,7 @@
   padding: 1rem;
   background: #fff;
   transition: box-shadow 0.2s;
+  cursor: pointer;
 }
 
 .release-card:hover {
@@ -99,11 +100,14 @@
 }
 
 .full-release-summary {
-  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-  border-left: 3px solid #667eea;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+    border-left: 3px solid #667eea;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;    
 }
 
 .full-release-stats {
@@ -121,7 +125,6 @@
 .tracks-label {
   font-size: 0.8125rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
   color: #555;
   text-transform: uppercase;
   letter-spacing: 0.5px;
