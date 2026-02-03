@@ -33,8 +33,8 @@ export const ReleasesList: React.FC = () => {
 
       <div className="releases-grid">
         {summary?.bundleRevenue > 0 && (
-        <div className="release-card" onClick={toggleBundles} role="button" tabIndex={0}>
-          <div className="release-header">
+        <div className="release-card">
+          <div className="release-header" onClick={toggleBundles}>
             <div className="release-info">
                 <div className="release-title">Full Discography (bundles)</div>
             </div>
@@ -66,8 +66,8 @@ export const ReleasesList: React.FC = () => {
       )}
 
         {releases.slice().sort((a, b) => b.totalRevenue - a.totalRevenue).map(rel => (
-          <div key={rel.title} className="release-card" onClick={() => toggle(rel.title)}>
-            <div className="release-header">
+          <div key={rel.title} className="release-card">
+            <div className="release-header" onClick={() => toggle(rel.title)}>
               <div className="release-info">
                 <div className="release-title">{rel.title}</div>
               </div>
@@ -114,8 +114,6 @@ export const ReleasesList: React.FC = () => {
                     <div className="tracks-empty">No individual track sales recorded for this release.</div>
                   )}
                 </div>
-
-                
               </div>
             )}
           </div>

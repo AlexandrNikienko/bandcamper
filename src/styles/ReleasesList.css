@@ -26,10 +26,8 @@
 .release-card {
   border: 1px solid #eee;
   border-radius: 8px;
-  padding: 1rem;
   background: #fff;
   transition: box-shadow 0.2s;
-  cursor: pointer;
 }
 
 .release-card:hover {
@@ -41,6 +39,8 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  cursor: pointer;
+  padding: 1rem;
 }
 
 .release-info {
@@ -94,9 +94,9 @@
 }
 
 .tracks-section {
-  margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #f0f0f0;
+  padding: 1rem;
 }
 
 .full-release-summary {
