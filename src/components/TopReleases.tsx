@@ -11,9 +11,9 @@ export const TopReleases: React.FC = () => {
   const chartData = useMemo(() => {
     return releases
       .slice()
-      .sort((a, b) => (sortBy === 'sales' ? b.totalSales - a.totalSales : b.totalRevenue - a.totalRevenue))
+      .sort((a: any, b: any) => (sortBy === 'sales' ? b.totalSales - a.totalSales : b.totalRevenue - a.totalRevenue))
       .slice(0, 15)
-      .map(r => ({ name: r.title.length > 20 ? r.title.substring(0, 20) + '...' : r.title, fullName: r.title, sales: r.totalSales, revenue: Math.round(r.totalRevenue * 100) / 100 }));
+      .map((r: any) => ({ name: r.title.length > 20 ? r.title.substring(0, 20) + '...' : r.title, fullName: r.title, sales: r.totalSales, revenue: Math.round(r.totalRevenue * 100) / 100 }));
   }, [releases, sortBy]);
 
   if (!releases || releases.length === 0) {

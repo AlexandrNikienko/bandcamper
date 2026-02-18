@@ -1,6 +1,6 @@
 import React from 'react';
 import { useData } from '../context/DataContext';
-import { TrendingUp, Disc, Music, Banknote } from 'lucide-react';
+import { TrendingUp, Banknote } from 'lucide-react';
 import '../styles/Summary.css';
 
 export const Summary: React.FC = () => {

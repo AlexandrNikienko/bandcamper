@@ -141,7 +141,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 albumSales: 0,
                 albumRevenue: 0,
                 currency: currency
-              });
+              } as any);
             }
 
             const rel = releaseMap.get(releaseTitle)!;
@@ -169,7 +169,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                   title: trackTitle || String(itemName).trim(),
                   sales: quantity,
                   revenue
-                });
+                } as any);
               }
             }
           }
@@ -185,7 +185,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
           resolve({ releasesProcessed: releasesArr.length, tracksProcessed: tracksArr.length });
         },
-        error: (err) => reject(err)
+        error: (err: any) => reject(err)
       });
     });
   };

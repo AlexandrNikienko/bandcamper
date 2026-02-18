@@ -27,11 +27,16 @@
   border: 1px solid #eee;
   border-radius: 8px;
   background: #fff;
-  transition: box-shadow 0.2s;
+  transition: 0.2s;
 }
 
 .release-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.release-card.expanded {
+  background-color: #f6f6f6;
+  border: 1px solid #764ba2;
 }
 
 .release-header {
@@ -41,6 +46,11 @@
   gap: 1rem;
   cursor: pointer;
   padding: 1rem;
+}
+
+.add-budget-btn {
+  color: #667eea;
+  border: 1px solid #667eea;
 }
 
 .release-info {
@@ -143,7 +153,7 @@
   padding: 0.5rem 0.75rem;
   border-radius: 6px;
   background: #fafafa;
-  transition: background 0.2s;
+  transition: 0.2s;
 }
 
 .track-item:hover {

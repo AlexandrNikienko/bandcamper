@@ -89,7 +89,7 @@ export const ReleasesList: React.FC = () => {
             <div className="releases-grid">
                 {/* Render bundle sales if available */}
                 {summary?.bundleRevenue > 0 && (
-                    <div className="release-card">
+                    <div className={`release-card ${bundlesExpanded ? 'expanded' : ''}`}>
                         <div className="release-header" onClick={toggleBundles}>
                             <div className="release-info">
                                 <div className="release-title">Full Discography (bundles)</div>
@@ -122,13 +122,13 @@ export const ReleasesList: React.FC = () => {
                 )}
 
                 {/* Render reelaaes sales if available */}
-                {releases.slice().sort((a, b) => b.totalRevenue - a.totalRevenue).map(rel => {
+                {releases.slice().sort((a: any, b: any) => b.totalRevenue - a.totalRevenue).map((rel: any) => {
                     const budget = budgets[rel.title] || { tracks: 0, art: 0, mastering: 0, others: 0 };
                     const totalBudget = Number(budget.tracks || 0) + Number(budget.art || 0) + Number(budget.mastering || 0) + Number(budget.others || 0);
                     const profit = Number(rel.totalRevenue || 0) - totalBudget; // positive = profit
 
                     return (
-                        <div key={rel.title} className="release-card">
+                        <div key={rel.title} className={`release-card ${expanded[rel.title] ? 'expanded' : ''}`}>
                             <div className="release-header" onClick={() => toggle(rel.title)}>
                                 <div className="release-info">
                                     <div className="release-title">{rel.title}</div>
@@ -141,7 +141,7 @@ export const ReleasesList: React.FC = () => {
                                     </div>
 
                                     <Space>
-                                        <Button size="small" onClick={() => openBudget(rel.title)}>{totalBudget > 0 ? 'Edit Budget' : 'Add Budget'}</Button>
+                                        <Button className='add-budget-btn' size="small" onClick={() => openBudget(rel.title)}>{totalBudget > 0 ? 'Edit Budget' : 'Add Budget'}</Button>
                                     </Space>
                                 </div>
                             </div>
@@ -233,27 +233,27 @@ const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: 
             <Space direction="vertical" style={{ width: '100%' }}>
                 <div>
                     <div style={{ marginBottom: 8 }}>Tracks</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={tracks} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setTracks(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={tracks} formatter={(value: any) => `${currencySymbol} ${value}`} parser={(value: any) => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v: any) => setTracks(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>Art</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={art} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setArt(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={art} formatter={(value: any) => `${currencySymbol} ${value}`} parser={(value: any) => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v: any) => setArt(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>Mastering</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={mastering} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setMastering(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={mastering} formatter={(value: any) => `${currencySymbol} ${value}`} parser={(value: any) => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v: any) => setMastering(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>Others</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={others} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setOthers(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={others} formatter={(value: any) => `${currencySymbol} ${value}`} parser={(value: any) => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v: any) => setOthers(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>TOTAL</div>
-                    <InputNumber style={{ width: '100%' }} value={total} readOnly formatter={value => `${currencySymbol} ${value}`} />
+                    <InputNumber style={{ width: '100%' }} value={total} readOnly formatter={(value: any) => `${currencySymbol} ${value}`} />
                 </div>
 
                 <div>

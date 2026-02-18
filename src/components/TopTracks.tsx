@@ -11,9 +11,9 @@ export const TopTracks: React.FC = () => {
   const chartData = useMemo(() => {
     return tracks
       .slice()
-      .sort((a, b) => (sortBy === 'sales' ? b.sales - a.sales : b.revenue - a.revenue))
+      .sort((a: any, b: any) => (sortBy === 'sales' ? b.sales - a.sales : b.revenue - a.revenue))
       .slice(0, 15)
-      .map(t => ({ name: t.title.length > 20 ? t.title.substring(0, 20) + '...' : t.title, fullName: t.title, sales: t.sales, revenue: Math.round(t.revenue * 100) / 100, release: t.releaseTitle }));
+      .map((t: any) => ({ name: t.title.length > 20 ? t.title.substring(0, 20) + '...' : t.title, fullName: t.title, sales: t.sales, revenue: Math.round(t.revenue * 100) / 100, release: t.releaseTitle }));
   }, [tracks, sortBy]);
 
   if (!tracks || tracks.length === 0) {
