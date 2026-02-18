@@ -7,238 +7,239 @@ import 'antd/dist/reset.css';
 const { Text } = Typography;
 
 export const ReleasesList: React.FC = () => {
-  const { releases, tracks, summary, bundles } = useData();
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [bundlesExpanded, setBundlesExpanded] = useState(false);
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [editingRelease, setEditingRelease] = useState<string | null>(null);
+    const { releases, tracks, summary, bundles } = useData();
+    const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+    const [bundlesExpanded, setBundlesExpanded] = useState(false);
+    const [drawerVisible, setDrawerVisible] = useState(false);
+    const [editingRelease, setEditingRelease] = useState<string | null>(null);
 
-  type Budget = { tracks: number; art: number; mastering: number; others: number };
-  const [budgets, setBudgets] = useState<Record<string, Budget>>({});
+    type Budget = { tracks: number; art: number; mastering: number; others: number };
+    const [budgets, setBudgets] = useState<Record<string, Budget>>({});
 
-  // load budgets from localStorage
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('releaseBudgets');
-      if (raw) setBudgets(JSON.parse(raw));
-    } catch (e) {
-      // ignore
+    // load budgets from localStorage
+    useEffect(() => {
+        try {
+            const raw = localStorage.getItem('releaseBudgets');
+            if (raw) setBudgets(JSON.parse(raw));
+        } catch (e) {
+            // ignore
+        }
+    }, []);
+
+    const saveBudgets = (next: Record<string, Budget>) => {
+        setBudgets(next);
+        try { localStorage.setItem('releaseBudgets', JSON.stringify(next)); } catch (e) { }
+    };
+
+    const toggle = (title: string) => {
+        setExpanded(prev => ({ ...prev, [title]: !prev[title] }));
+    };
+
+    const toggleBundles = () => setBundlesExpanded(v => !v);
+
+    const openBudget = (releaseTitle: string) => {
+        setEditingRelease(releaseTitle);
+        setDrawerVisible(true);
+    };
+
+    const closeDrawer = () => {
+        setDrawerVisible(false);
+        setEditingRelease(null);
+    };
+
+    // Group tracks by release
+    const tracksByRelease: Record<string, Array<any>> = {};
+    for (const t of tracks) {
+        const rel = t.releaseTitle || 'Unknown Release';
+        if (!tracksByRelease[rel]) tracksByRelease[rel] = [];
+        tracksByRelease[rel].push(t);
     }
-  }, []);
 
-  const saveBudgets = (next: Record<string, Budget>) => {
-    setBudgets(next);
-    try { localStorage.setItem('releaseBudgets', JSON.stringify(next)); } catch (e) {}
-  };
+    if (!releases || releases.length === 0) {
+        return <div className="chart-container"><p className="no-data">No releases available — upload a CSV to see sales.</p></div>;
+    }
 
-  const toggle = (title: string) => {
-    setExpanded(prev => ({ ...prev, [title]: !prev[title] }));
-  };
-
-  const toggleBundles = () => setBundlesExpanded(v => !v);
-
-  const openBudget = (releaseTitle: string) => {
-    setEditingRelease(releaseTitle);
-    setDrawerVisible(true);
-  };
-
-  const closeDrawer = () => {
-    setDrawerVisible(false);
-    setEditingRelease(null);
-  };
-
-  // Group tracks by release
-  const tracksByRelease: Record<string, Array<any>> = {};
-  for (const t of tracks) {
-    const rel = t.releaseTitle || 'Unknown Release';
-    if (!tracksByRelease[rel]) tracksByRelease[rel] = [];
-    tracksByRelease[rel].push(t);
-  }
-
-  if (!releases || releases.length === 0) {
-    return <div className="chart-container"><p className="no-data">No releases available — upload a CSV to see sales.</p></div>;
-  }
-
-  return (
-    <div className="releases-container">
-      <div className="releases-header">
-        <h2>Releases</h2>
-      </div>
-
-      <div className="releases-grid">
-        {/* Render bundle sales if available */}
-        {summary?.bundleRevenue > 0 && (
-        <div className="release-card">
-          <div className="release-header" onClick={toggleBundles}>
-            <div className="release-info">
-                <div className="release-title">Full Discography (bundles)</div>
+    return (
+        <div className="releases-container">
+            <div className="releases-header">
+                <h2>Releases</h2>
             </div>
 
-            <div className="release-stats">
-              <div className="release-revenue">
-                <span className="release-sales">{summary.bundleSales || 0} sales</span> · €{summary.bundleRevenue?.toFixed ? summary.bundleRevenue.toFixed(2) : Number(summary.bundleRevenue || 0).toFixed(2)}
-                </div>
-            </div>
-          </div>
+            <div className="releases-grid">
+                {/* Render bundle sales if available */}
+                {summary?.bundleRevenue > 0 && (
+                    <div className="release-card">
+                        <div className="release-header" onClick={toggleBundles}>
+                            <div className="release-info">
+                                <div className="release-title">Full Discography (bundles)</div>
+                            </div>
 
-          {bundlesExpanded && (
-            <div className="tracks-section">
-              <div className="tracks-list">
-                {(bundles || []).slice().map((b: any, idx: number) => (
-                  <div key={`${b.title}-${idx}`} className="track-item">
-                    <div className="track-title">{b.title}</div>
-                    <div className="track-stats">{b.quantity} · €{Number(b.revenue).toFixed(2)}</div>
-                  </div>
-                ))}
+                            <div className="release-stats">
+                                <div className="release-revenue">
+                                    <span className="release-sales">{summary.bundleSales || 0} sales</span> · €{summary.bundleRevenue?.toFixed ? summary.bundleRevenue.toFixed(2) : Number(summary.bundleRevenue || 0).toFixed(2)}
+                                </div>
+                            </div>
+                        </div>
 
-                {(!(bundles || []).length) && (
-                  <div className="tracks-empty">No bundle sales recorded.</div>
+                        {bundlesExpanded && (
+                            <div className="tracks-section">
+                                <div className="tracks-list">
+                                    {(bundles || []).slice().map((b: any, idx: number) => (
+                                        <div key={`${b.title}-${idx}`} className="track-item">
+                                            <div className="track-title">{b.title}</div>
+                                            <div className="track-stats">{b.quantity} sales · €{Number(b.revenue).toFixed(2)}</div>
+                                        </div>
+                                    ))}
+
+                                    {(!(bundles || []).length) && (
+                                        <div className="tracks-empty">No bundle sales recorded.</div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 )}
-              </div>
+
+                {/* Render reelaaes sales if available */}
+                {releases.slice().sort((a, b) => b.totalRevenue - a.totalRevenue).map(rel => {
+                    const budget = budgets[rel.title] || { tracks: 0, art: 0, mastering: 0, others: 0 };
+                    const totalBudget = Number(budget.tracks || 0) + Number(budget.art || 0) + Number(budget.mastering || 0) + Number(budget.others || 0);
+                    const profit = Number(rel.totalRevenue || 0) - totalBudget; // positive = profit
+
+                    return (
+                        <div key={rel.title} className="release-card">
+                            <div className="release-header" onClick={() => toggle(rel.title)}>
+                                <div className="release-info">
+                                    <div className="release-title">{rel.title}</div>
+                                    {totalBudget > 0 && <div style={{ color: profit >= 0 ? 'green' : 'red', marginTop: '0.5rem', fontSize: '0.9em' }}>Profit: {profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</div>}
+                                </div>
+
+                                <div className="release-stats">
+                                    <div className="release-revenue">
+                                        <span className="release-sales">{rel.totalSales} sales</span> · €{rel.totalRevenue?.toFixed ? rel.totalRevenue.toFixed(2) : Number(rel.totalRevenue).toFixed(2)}
+                                    </div>
+
+                                    <Space>
+                                        <Button size="small" onClick={() => openBudget(rel.title)}>{totalBudget > 0 ? 'Edit Budget' : 'Add Budget'}</Button>
+                                    </Space>
+                                </div>
+                            </div>
+
+                            {expanded[rel.title] && (
+                                <div className="tracks-section">
+                                    <div className="full-release-summary">
+                                        <div className="tracks-label">Full release sales</div>
+
+                                        <div className="full-release-stats">
+                                            <div className="track-stats">{rel.albumSales} sales · €{rel.albumRevenue?.toFixed ? rel.albumRevenue.toFixed(2) : Number(rel.albumRevenue).toFixed(2)}</div>
+                                        </div>
+                                    </div>
+
+                                    {(tracksByRelease[rel.title] || []).length > 0 && (
+                                        <div className="tracks-total">
+                                            <div className="tracks-label">Tracks sales total</div>
+
+                                            <div className="track-stats">
+                                                {(tracksByRelease[rel.title] || []).reduce((sum, t) => sum + t.sales, 0)} sales · €{((tracksByRelease[rel.title] || []).reduce((sum, t) => sum + Number(t.revenue), 0)).toFixed(2)}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="tracks-list">
+                                        {((tracksByRelease[rel.title] || []).slice().sort((a, b) => b.sales - a.sales)).map((t, idx) => (
+                                            <div key={`${t.title}-${idx}`} className="track-item">
+                                                <div className="track-title">{t.title}</div>
+
+                                                <div className="track-stats">{t.sales} sales · €{Number(t.revenue).toFixed(2)}</div>
+                                            </div>
+                                        ))}
+
+                                        {(!(tracksByRelease[rel.title] || []).length) && (
+                                            <div className="tracks-empty">No individual track sales recorded for this release.</div>
+                                        )}
+                                    </div>
+
+                                    <div style={{ marginTop: 12 }}>
+                                        <Text strong>Budget Total:</Text> €{totalBudget.toFixed(2)}{' '}
+                                        <Text strong style={{ marginLeft: 12 }}>Profit:</Text>
+                                        <Text style={{ color: profit >= 0 ? 'green' : 'red', marginLeft: 8 }}>{profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</Text>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )
+                })}
             </div>
-          )}
+
+            <Drawer title={editingRelease ? `Budget: ${editingRelease}` : 'Budget'} placement="right" onClose={closeDrawer} open={drawerVisible} width={360}>
+                {editingRelease && (
+                    <BudgetForm
+                        initial={budgets[editingRelease] || { tracks: 0, art: 0, mastering: 0, others: 0 }}
+                        onCancel={closeDrawer}
+                        onApply={(nextBud) => {
+                            const next = { ...budgets, [editingRelease]: nextBud };
+                            saveBudgets(next);
+                            closeDrawer();
+                        }}
+                        netRevenue={(() => {
+                            const r = releases.find((x: any) => x.title === editingRelease);
+                            return r ? Number(r.totalRevenue || 0) : 0;
+                        })()}
+                    />
+                )}
+            </Drawer>
         </div>
-      )}
-
-      {/* Render reelaaes sales if available */}
-        {releases.slice().sort((a, b) => b.totalRevenue - a.totalRevenue).map(rel => {
-          const budget = budgets[rel.title] || { tracks: 0, art: 0, mastering: 0, others: 0 };
-          const totalBudget = Number(budget.tracks || 0) + Number(budget.art || 0) + Number(budget.mastering || 0) + Number(budget.others || 0);
-          const profit = Number(rel.totalRevenue || 0) - totalBudget; // positive = profit
-
-          return (
-          <div key={rel.title} className="release-card">
-            <div className="release-header" onClick={() => toggle(rel.title)}>
-              <div className="release-info">
-                <div className="release-title">{rel.title}</div>
-                {totalBudget > 0 && <div style={{ color: profit >= 0 ? 'green' : 'red', marginTop: '0.5rem', fontSize: '0.9em' }}>Profit: {profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</div>}
-              </div>
-
-              <div className="release-stats">
-                <div className="release-revenue">
-                    <span className="release-sales">{rel.totalSales} sales</span> · €{rel.totalRevenue?.toFixed ? rel.totalRevenue.toFixed(2) : Number(rel.totalRevenue).toFixed(2)}
-                </div>
-
-                <Space>
-                  <Button size="small" onClick={() => openBudget(rel.title)}>{totalBudget > 0 ? 'Edit Budget' : 'Add Budget'}</Button>
-                </Space>
-              </div>
-            </div>
-
-            {expanded[rel.title] && (
-              <div className="tracks-section">
-                <div className="full-release-summary">
-                  <div className="tracks-label">Full release sales</div>
-
-                  <div className="full-release-stats">
-                    <div className="track-stats">{rel.albumSales} sales · €{rel.albumRevenue?.toFixed ? rel.albumRevenue.toFixed(2) : Number(rel.albumRevenue).toFixed(2)}</div>
-                  </div>
-                </div>
-
-                {(tracksByRelease[rel.title] || []).length > 0 && (
-                  <div className="tracks-total">
-                    <div className="tracks-label">Tracks sales total</div>
-
-                    <div className="track-stats">
-                      {(tracksByRelease[rel.title] || []).reduce((sum, t) => sum + t.sales, 0)} sales · €{((tracksByRelease[rel.title] || []).reduce((sum, t) => sum + Number(t.revenue), 0)).toFixed(2)}
-                    </div>
-                  </div>
-                )}
-
-                <div className="tracks-list">
-                  {((tracksByRelease[rel.title] || []).slice().sort((a, b) => b.sales - a.sales)).map((t, idx) => (
-                    <div key={`${t.title}-${idx}`} className="track-item">
-                      <div className="track-title">{t.title}</div>
-
-                      <div className="track-stats">{t.sales} sales · €{Number(t.revenue).toFixed(2)}</div>
-                    </div>
-                  ))}
-
-                  {(!(tracksByRelease[rel.title] || []).length) && (
-                    <div className="tracks-empty">No individual track sales recorded for this release.</div>
-                  )}
-                </div>
-
-                <div style={{ marginTop: 12 }}>
-                  <Text strong>Budget Total:</Text> €{totalBudget.toFixed(2)}{' '}
-                  <Text strong style={{ marginLeft: 12 }}>Profit:</Text>
-                  <Text style={{ color: profit >= 0 ? 'green' : 'red', marginLeft: 8 }}>{profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</Text>
-                </div>
-              </div>
-            )}
-          </div>
-        )})}
-      </div>
-
-      <Drawer title={editingRelease ? `Budget: ${editingRelease}` : 'Budget'} placement="right" onClose={closeDrawer} open={drawerVisible} width={360}>
-        {editingRelease && (
-          <BudgetForm
-            initial={budgets[editingRelease] || { tracks: 0, art: 0, mastering: 0, others: 0 }}
-            onCancel={closeDrawer}
-            onApply={(nextBud) => {
-              const next = { ...budgets, [editingRelease]: nextBud };
-              saveBudgets(next);
-              closeDrawer();
-            }}
-            netRevenue={(() => {
-              const r = releases.find((x: any) => x.title === editingRelease);
-              return r ? Number(r.totalRevenue || 0) : 0;
-            })()}
-          />
-        )}
-      </Drawer>
-    </div>
-  );
+    );
 };
 
 // small budget form component inside this file to keep changes localized
 const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: number; others: number }; onApply: (b: any) => void; onCancel: () => void; netRevenue: number }> = ({ initial, onApply, onCancel, netRevenue }) => {
-  const [tracks, setTracks] = useState<number>(initial.tracks || 0);
-  const [art, setArt] = useState<number>(initial.art || 0);
-  const [mastering, setMastering] = useState<number>(initial.mastering || 0);
-  const [others, setOthers] = useState<number>(initial.others || 0);
+    const [tracks, setTracks] = useState<number>(initial.tracks || 0);
+    const [art, setArt] = useState<number>(initial.art || 0);
+    const [mastering, setMastering] = useState<number>(initial.mastering || 0);
+    const [others, setOthers] = useState<number>(initial.others || 0);
 
-  const total = Number(tracks || 0) + Number(art || 0) + Number(mastering || 0) + Number(others || 0);
-  const profit = Number(netRevenue || 0) - total;
+    const total = Number(tracks || 0) + Number(art || 0) + Number(mastering || 0) + Number(others || 0);
+    const profit = Number(netRevenue || 0) - total;
 
-  return (
-    <div>
-      <Space direction="vertical" style={{ width: '100%' }}>
+    return (
         <div>
-          <div style={{ marginBottom: 8 }}>Tracks</div>
-          <InputNumber style={{ width: '100%' }} min={0} value={tracks} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setTracks(Number(v || 0))} />
-        </div>
+            <Space direction="vertical" style={{ width: '100%' }}>
+                <div>
+                    <div style={{ marginBottom: 8 }}>Tracks</div>
+                    <InputNumber style={{ width: '100%' }} min={0} value={tracks} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setTracks(Number(v || 0))} />
+                </div>
 
-        <div>
-          <div style={{ marginBottom: 8 }}>Art</div>
-          <InputNumber style={{ width: '100%' }} min={0} value={art} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setArt(Number(v || 0))} />
-        </div>
+                <div>
+                    <div style={{ marginBottom: 8 }}>Art</div>
+                    <InputNumber style={{ width: '100%' }} min={0} value={art} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setArt(Number(v || 0))} />
+                </div>
 
-        <div>
-          <div style={{ marginBottom: 8 }}>Mastering</div>
-          <InputNumber style={{ width: '100%' }} min={0} value={mastering} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setMastering(Number(v || 0))} />
-        </div>
+                <div>
+                    <div style={{ marginBottom: 8 }}>Mastering</div>
+                    <InputNumber style={{ width: '100%' }} min={0} value={mastering} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setMastering(Number(v || 0))} />
+                </div>
 
-        <div>
-          <div style={{ marginBottom: 8 }}>Others</div>
-          <InputNumber style={{ width: '100%' }} min={0} value={others} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setOthers(Number(v || 0))} />
-        </div>
+                <div>
+                    <div style={{ marginBottom: 8 }}>Others</div>
+                    <InputNumber style={{ width: '100%' }} min={0} value={others} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setOthers(Number(v || 0))} />
+                </div>
 
-        <div>
-          <div style={{ marginBottom: 8 }}>TOTAL</div>
-          <InputNumber style={{ width: '100%' }} value={total} readOnly formatter={value => `€ ${value}`} />
-        </div>
+                <div>
+                    <div style={{ marginBottom: 8 }}>TOTAL</div>
+                    <InputNumber style={{ width: '100%' }} value={total} readOnly formatter={value => `€ ${value}`} />
+                </div>
 
-        <div>
-          <div style={{ marginBottom: 8 }}>Profit (Net Revenue - Budget)</div>
-          <Text style={{ color: profit >= 0 ? 'green' : 'red' }}>{profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</Text>
-        </div>
+                <div>
+                    <div style={{ marginBottom: 8 }}>Profit (Net Revenue - Budget)</div>
+                    <Text style={{ color: profit >= 0 ? 'green' : 'red' }}>{profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</Text>
+                </div>
 
-        <Space style={{ marginTop: 8 }}>
-          <Button onClick={onCancel}>Cancel</Button>
-          <Button type="primary" onClick={() => onApply({ tracks, art, mastering, others })}>Apply</Button>
-        </Space>
-      </Space>
-    </div>
-  );
+                <Space style={{ marginTop: 8 }}>
+                    <Button onClick={onCancel}>Cancel</Button>
+                    <Button type="primary" onClick={() => onApply({ tracks, art, mastering, others })}>Apply</Button>
+                </Space>
+            </Space>
+        </div>
+    );
 };

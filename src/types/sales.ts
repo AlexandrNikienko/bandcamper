@@ -8,6 +8,7 @@ export interface Release {
   albumRevenue: number;
   createdAt: string;
   updatedAt: string;
+  currency: string;
 }
 
 export interface Track {

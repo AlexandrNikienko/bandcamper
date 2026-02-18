@@ -78,6 +78,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const containerName = record['Container name'] || record['Container Name'] || record['Container'] || '';
             const artistName = record['Artist name'] || record['Artist Name'] || record['Artist'] || 'Unknown Artist';
             const itemTypeRaw = String(record['Item type'] || record['Item Type'] || record['item type'] || '').toLowerCase();
+            const currency = record['Currency'] || record['currency'];
 
             // Quantity is typically an integer
             const quantity = parseInt(record['Quantity'] ?? record['quantity'] ?? '1', 10) || 1;
@@ -138,7 +139,8 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 totalSales: 0,
                 totalRevenue: 0,
                 albumSales: 0,
-                albumRevenue: 0
+                albumRevenue: 0,
+                currency: currency
               });
             }
 
