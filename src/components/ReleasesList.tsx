@@ -8,6 +8,27 @@ const { Text } = Typography;
 
 export const ReleasesList: React.FC = () => {
     const { releases, tracks, summary, bundles } = useData();
+    const currencySymbolFor = (currency?: string) => {
+        if (!currency) return '€';
+        const c = String(currency).trim().toUpperCase();
+        switch (c) {
+            case 'EUR':
+            case '€':
+                return '€';
+            case 'USD':
+            case 'US$':
+            case '$':
+                return '$';
+            case 'GBP':
+            case '£':
+                return '£';
+            case 'JPY':
+            case '¥':
+                return '¥';
+            default:
+                return c; // fallback to currency code
+        }
+    };
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
     const [bundlesExpanded, setBundlesExpanded] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
@@ -76,7 +97,7 @@ export const ReleasesList: React.FC = () => {
 
                             <div className="release-stats">
                                 <div className="release-revenue">
-                                    <span className="release-sales">{summary.bundleSales || 0} sales</span> · €{summary.bundleRevenue?.toFixed ? summary.bundleRevenue.toFixed(2) : Number(summary.bundleRevenue || 0).toFixed(2)}
+                                    <span className="release-sales">{summary.bundleSales || 0} sales</span> · {currencySymbolFor(releases?.[0]?.currency)}{summary.bundleRevenue?.toFixed ? summary.bundleRevenue.toFixed(2) : Number(summary.bundleRevenue || 0).toFixed(2)}
                                 </div>
                             </div>
                         </div>
@@ -87,7 +108,7 @@ export const ReleasesList: React.FC = () => {
                                     {(bundles || []).slice().map((b: any, idx: number) => (
                                         <div key={`${b.title}-${idx}`} className="track-item">
                                             <div className="track-title">{b.title}</div>
-                                            <div className="track-stats">{b.quantity} sales · €{Number(b.revenue).toFixed(2)}</div>
+                                            <div className="track-stats">{b.quantity} sales · {currencySymbolFor(releases?.[0]?.currency)}{Number(b.revenue).toFixed(2)}</div>
                                         </div>
                                     ))}
 
@@ -116,7 +137,7 @@ export const ReleasesList: React.FC = () => {
 
                                 <div className="release-stats">
                                     <div className="release-revenue">
-                                        <span className="release-sales">{rel.totalSales} sales</span> · €{rel.totalRevenue?.toFixed ? rel.totalRevenue.toFixed(2) : Number(rel.totalRevenue).toFixed(2)}
+                                        <span className="release-sales">{rel.totalSales} sales</span> · {currencySymbolFor(rel.currency)}{rel.totalRevenue?.toFixed ? rel.totalRevenue.toFixed(2) : Number(rel.totalRevenue).toFixed(2)}
                                     </div>
 
                                     <Space>
@@ -131,7 +152,7 @@ export const ReleasesList: React.FC = () => {
                                         <div className="tracks-label">Full release sales</div>
 
                                         <div className="full-release-stats">
-                                            <div className="track-stats">{rel.albumSales} sales · €{rel.albumRevenue?.toFixed ? rel.albumRevenue.toFixed(2) : Number(rel.albumRevenue).toFixed(2)}</div>
+                                            <div className="track-stats">{rel.albumSales} sales · {currencySymbolFor(rel.currency)}{rel.albumRevenue?.toFixed ? rel.albumRevenue.toFixed(2) : Number(rel.albumRevenue).toFixed(2)}</div>
                                         </div>
                                     </div>
 
@@ -140,7 +161,7 @@ export const ReleasesList: React.FC = () => {
                                             <div className="tracks-label">Tracks sales total</div>
 
                                             <div className="track-stats">
-                                                {(tracksByRelease[rel.title] || []).reduce((sum, t) => sum + t.sales, 0)} sales · €{((tracksByRelease[rel.title] || []).reduce((sum, t) => sum + Number(t.revenue), 0)).toFixed(2)}
+                                                {(tracksByRelease[rel.title] || []).reduce((sum, t) => sum + t.sales, 0)} sales · {currencySymbolFor(rel.currency)}{((tracksByRelease[rel.title] || []).reduce((sum, t) => sum + Number(t.revenue), 0)).toFixed(2)}
                                             </div>
                                         </div>
                                     )}
@@ -150,7 +171,7 @@ export const ReleasesList: React.FC = () => {
                                             <div key={`${t.title}-${idx}`} className="track-item">
                                                 <div className="track-title">{t.title}</div>
 
-                                                <div className="track-stats">{t.sales} sales · €{Number(t.revenue).toFixed(2)}</div>
+                                                <div className="track-stats">{t.sales} sales · {currencySymbolFor(rel.currency)}{Number(t.revenue).toFixed(2)}</div>
                                             </div>
                                         ))}
 
@@ -160,9 +181,9 @@ export const ReleasesList: React.FC = () => {
                                     </div>
 
                                     <div style={{ marginTop: 12 }}>
-                                        <Text strong>Budget Total:</Text> €{totalBudget.toFixed(2)}{' '}
+                                        <Text strong>Budget Total:</Text> {currencySymbolFor(rel.currency)}{totalBudget.toFixed(2)}{' '}
                                         <Text strong style={{ marginLeft: 12 }}>Profit:</Text>
-                                        <Text style={{ color: profit >= 0 ? 'green' : 'red', marginLeft: 8 }}>{profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</Text>
+                                        <Text style={{ color: profit >= 0 ? 'green' : 'red', marginLeft: 8 }}>{profit >= 0 ? currencySymbolFor(rel.currency) + profit.toFixed(2) : currencySymbolFor(rel.currency) + profit.toFixed(2)}</Text>
                                     </div>
                                 </div>
                             )}
@@ -173,19 +194,24 @@ export const ReleasesList: React.FC = () => {
 
             <Drawer title={editingRelease ? `Budget: ${editingRelease}` : 'Budget'} placement="right" onClose={closeDrawer} open={drawerVisible} width={360}>
                 {editingRelease && (
-                    <BudgetForm
-                        initial={budgets[editingRelease] || { tracks: 0, art: 0, mastering: 0, others: 0 }}
-                        onCancel={closeDrawer}
-                        onApply={(nextBud) => {
-                            const next = { ...budgets, [editingRelease]: nextBud };
-                            saveBudgets(next);
-                            closeDrawer();
-                        }}
-                        netRevenue={(() => {
-                            const r = releases.find((x: any) => x.title === editingRelease);
-                            return r ? Number(r.totalRevenue || 0) : 0;
-                        })()}
-                    />
+                    (() => {
+                        const r = releases.find((x: any) => x.title === editingRelease);
+                        const net = r ? Number(r.totalRevenue || 0) : 0;
+                        const symbol = currencySymbolFor(r?.currency || releases?.[0]?.currency);
+                        return (
+                            <BudgetForm
+                                initial={budgets[editingRelease] || { tracks: 0, art: 0, mastering: 0, others: 0 }}
+                                onCancel={closeDrawer}
+                                onApply={(nextBud) => {
+                                    const next = { ...budgets, [editingRelease]: nextBud };
+                                    saveBudgets(next);
+                                    closeDrawer();
+                                }}
+                                netRevenue={net}
+                                currencySymbol={symbol}
+                            />
+                        );
+                    })()
                 )}
             </Drawer>
         </div>
@@ -193,7 +219,7 @@ export const ReleasesList: React.FC = () => {
 };
 
 // small budget form component inside this file to keep changes localized
-const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: number; others: number }; onApply: (b: any) => void; onCancel: () => void; netRevenue: number }> = ({ initial, onApply, onCancel, netRevenue }) => {
+const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: number; others: number }; onApply: (b: any) => void; onCancel: () => void; netRevenue: number; currencySymbol?: string }> = ({ initial, onApply, onCancel, netRevenue, currencySymbol = '€' }) => {
     const [tracks, setTracks] = useState<number>(initial.tracks || 0);
     const [art, setArt] = useState<number>(initial.art || 0);
     const [mastering, setMastering] = useState<number>(initial.mastering || 0);
@@ -207,32 +233,32 @@ const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: 
             <Space direction="vertical" style={{ width: '100%' }}>
                 <div>
                     <div style={{ marginBottom: 8 }}>Tracks</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={tracks} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setTracks(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={tracks} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setTracks(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>Art</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={art} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setArt(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={art} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setArt(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>Mastering</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={mastering} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setMastering(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={mastering} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setMastering(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>Others</div>
-                    <InputNumber style={{ width: '100%' }} min={0} value={others} formatter={value => `€ ${value}`} parser={value => String(value).replace(/€\s?|,/g, '')} onChange={(v) => setOthers(Number(v || 0))} />
+                    <InputNumber style={{ width: '100%' }} min={0} value={others} formatter={value => `${currencySymbol} ${value}`} parser={value => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v) => setOthers(Number(v || 0))} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>TOTAL</div>
-                    <InputNumber style={{ width: '100%' }} value={total} readOnly formatter={value => `€ ${value}`} />
+                    <InputNumber style={{ width: '100%' }} value={total} readOnly formatter={value => `${currencySymbol} ${value}`} />
                 </div>
 
                 <div>
                     <div style={{ marginBottom: 8 }}>Profit (Net Revenue - Budget)</div>
-                    <Text style={{ color: profit >= 0 ? 'green' : 'red' }}>{profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</Text>
+                    <Text style={{ color: profit >= 0 ? 'green' : 'red' }}>{profit >= 0 ? currencySymbol + profit.toFixed(2) : currencySymbol + profit.toFixed(2)}</Text>
                 </div>
 
                 <Space style={{ marginTop: 8 }}>
