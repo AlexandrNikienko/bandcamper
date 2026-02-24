@@ -42,10 +42,53 @@
 .release-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
   cursor: pointer;
-  padding: 1rem;
+  padding: .5rem 1rem;
+}
+
+.release-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 1rem;
+    font-size: 12px;
+    font-family: 'Space Mono', monospace;
+}
+
+.release-chart {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: lightgray;  
+  border-radius: 6px;
+  height: 28px;
+  font-weight: 600;
+}
+
+.release-chart-value {
+  height: 28px;
+  border-radius: 6px;
+  transition: width 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  justify-content: end;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  padding-inline: 0.6rem;
+  min-width: 60px;
+}
+
+.bundle {
+  justify-content: flex-end;
+  padding-inline: .6rem;
+  background: #0CACD7;
+  color: white;
 }
 
 .add-budget-btn {
@@ -55,12 +98,15 @@
 
 .release-info {
   flex: 1;
+  text-align: right;
+  font-size: 14px;
 }
 
 .release-title {
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 600;
   color: #333;
+  width: 400px;
+  text-align: right;
 }
 
 .release-stats {
@@ -69,6 +115,7 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 0.5rem;
+  margin-inline-start: auto;
 }
 
 .release-revenue {
@@ -78,8 +125,9 @@
 }
 
 .release-sales {
-  font-size: 0.8125rem;
   color: #666;
+  width: 140px;
+  font-weight: 600;
 }
 
 .toggle-tracks-btn {
@@ -134,8 +182,8 @@
 
 .tracks-label {
   font-size: 0.8125rem;
-  font-weight: 600;
-  color: #555;
+  font-weight: 700;
+  color: #333;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -192,12 +240,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.tracks-total .tracks-label {
-  margin: 0;
-  font-weight: 700;
-  color: #333;
 }
 
 .tracks-total .track-stats {

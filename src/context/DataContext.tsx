@@ -77,7 +77,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const itemName = record['Item name'] || record['Item Name'] || record['Item Title'] || record['Item title'] || record['Item'] || '';
             const containerName = record['Container name'] || record['Container Name'] || record['Container'] || '';
             const artistName = record['Artist name'] || record['Artist Name'] || record['Artist'] || 'Unknown Artist';
-            const itemTypeRaw = String(record['Item type'] || record['Item Type'] || record['item type'] || '').toLowerCase();
+            const itemTypeRaw = String(record['Item type'] || record['Item Type'] || record['item type'] || record['Item type (digital)'] || '').toLowerCase();
             const currency = record['Currency'] || record['currency'];
 
             // Quantity is typically an integer

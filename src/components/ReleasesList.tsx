@@ -33,8 +33,9 @@ export const ReleasesList: React.FC = () => {
     const [bundlesExpanded, setBundlesExpanded] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [editingRelease, setEditingRelease] = useState<string | null>(null);
+    const [showBudget, setShowBudget] = useState<boolean>(false);
 
-    type Budget = { tracks: number; art: number; mastering: number; others: number };
+    type Budget = { tracks: number; art: number; mastering: number; physical: number; others: number };
     const [budgets, setBudgets] = useState<Record<string, Budget>>({});
 
     // load budgets from localStorage
@@ -76,6 +77,9 @@ export const ReleasesList: React.FC = () => {
         tracksByRelease[rel].push(t);
     }
 
+    // compute the maximum sales among releases (exclude bundles) for chart scaling
+    const maxRevenue = releases && releases.length ? releases.reduce((m: number, r: any) => Math.max(m, Number(r.totalRevenue || 0)), 0) : 0;
+
     if (!releases || releases.length === 0) {
         return <div className="chart-container"><p className="no-data">No releases available — upload a CSV to see sales.</p></div>;
     }
@@ -84,6 +88,7 @@ export const ReleasesList: React.FC = () => {
         <div className="releases-container">
             <div className="releases-header">
                 <h2>Releases</h2>
+                <label>Budget <input type="checkbox" checked={showBudget} onChange={() => setShowBudget(!showBudget)} /></label>
             </div>
 
             <div className="releases-grid">
@@ -91,14 +96,14 @@ export const ReleasesList: React.FC = () => {
                 {summary?.bundleRevenue > 0 && (
                     <div className={`release-card ${bundlesExpanded ? 'expanded' : ''}`}>
                         <div className="release-header" onClick={toggleBundles}>
-                            <div className="release-info">
+                            <div className="release-row">
                                 <div className="release-title">Full Discography (bundles)</div>
-                            </div>
 
-                            <div className="release-stats">
-                                <div className="release-revenue">
-                                    <span className="release-sales">{summary.bundleSales || 0} sales</span> · {currencySymbolFor(releases?.[0]?.currency)}{summary.bundleRevenue?.toFixed ? summary.bundleRevenue.toFixed(2) : Number(summary.bundleRevenue || 0).toFixed(2)}
+                                <div className="release-chart bundle">
+                                    {currencySymbolFor(releases?.[0]?.currency)}{summary.bundleRevenue?.toFixed ? summary.bundleRevenue.toFixed(2) : Number(summary.bundleRevenue || 0).toFixed(2)}
                                 </div>
+
+                                <div className="release-sales">{summary.bundleSales || 0} sales</div>
                             </div>
                         </div>
 
@@ -130,20 +135,31 @@ export const ReleasesList: React.FC = () => {
                     return (
                         <div key={rel.title} className={`release-card ${expanded[rel.title] ? 'expanded' : ''}`}>
                             <div className="release-header" onClick={() => toggle(rel.title)}>
-                                <div className="release-info">
+                                <div className="release-row">
                                     <div className="release-title">{rel.title}</div>
-                                    {totalBudget > 0 && <div style={{ color: profit >= 0 ? 'green' : 'red', marginTop: '0.5rem', fontSize: '0.9em' }}>Profit: {profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</div>}
-                                </div>
 
-                                <div className="release-stats">
-                                    <div className="release-revenue">
-                                        <span className="release-sales">{rel.totalSales} sales</span> · {currencySymbolFor(rel.currency)}{rel.totalRevenue?.toFixed ? rel.totalRevenue.toFixed(2) : Number(rel.totalRevenue).toFixed(2)}
+                                    <div className="release-chart">
+                                        <div
+                                            className="release-chart-value"
+                                            style={{
+                                                width: `${maxRevenue > 0 ? (Number(rel.totalRevenue || 0) / maxRevenue) * 100 : 0}%`,
+                                            }}
+                                        >
+                                            {currencySymbolFor(rel.currency)}{rel.totalRevenue?.toFixed(2)}
+                                        </div>
                                     </div>
 
-                                    <Space>
-                                        <Button className='add-budget-btn' size="small" onClick={() => openBudget(rel.title)}>{totalBudget > 0 ? 'Edit Budget' : 'Add Budget'}</Button>
-                                    </Space>
+                                    <div className="release-sales">{rel.totalSales} sales</div>
                                 </div>
+                                
+
+                                {showBudget && (<>
+                                    {totalBudget > 0 && <div className="release-info" style={{ color: profit >= 0 ? 'green' : 'red'}}>Profit: {profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</div>}
+
+                                    <div className="release-stats">
+                                        <Button className='add-budget-btn' size="small" onClick={(e) => { e.stopPropagation(); openBudget(rel.title); }}>{totalBudget > 0 ? 'Edit Budget' : 'Add Budget'}</Button>
+                                    </div>
+                                </>)}
                             </div>
 
                             {expanded[rel.title] && (
@@ -200,7 +216,7 @@ export const ReleasesList: React.FC = () => {
                         const symbol = currencySymbolFor(r?.currency || releases?.[0]?.currency);
                         return (
                             <BudgetForm
-                                initial={budgets[editingRelease] || { tracks: 0, art: 0, mastering: 0, others: 0 }}
+                                initial={budgets[editingRelease] || { tracks: 0, art: 0, mastering: 0, physical: 0, others: 0 }}
                                 onCancel={closeDrawer}
                                 onApply={(nextBud) => {
                                     const next = { ...budgets, [editingRelease]: nextBud };
@@ -219,10 +235,11 @@ export const ReleasesList: React.FC = () => {
 };
 
 // small budget form component inside this file to keep changes localized
-const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: number; others: number }; onApply: (b: any) => void; onCancel: () => void; netRevenue: number; currencySymbol?: string }> = ({ initial, onApply, onCancel, netRevenue, currencySymbol = '€' }) => {
+const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: number; physical: number; others: number }; onApply: (b: any) => void; onCancel: () => void; netRevenue: number; currencySymbol?: string }> = ({ initial, onApply, onCancel, netRevenue, currencySymbol = '€' }) => {
     const [tracks, setTracks] = useState<number>(initial.tracks || 0);
     const [art, setArt] = useState<number>(initial.art || 0);
     const [mastering, setMastering] = useState<number>(initial.mastering || 0);
+    const [physical, setPhysical] = useState<number>(initial.physical || 0);
     const [others, setOthers] = useState<number>(initial.others || 0);
 
     const total = Number(tracks || 0) + Number(art || 0) + Number(mastering || 0) + Number(others || 0);
@@ -247,23 +264,28 @@ const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: 
                 </div>
 
                 <div>
+                    <div style={{ marginBottom: 8 }}>CDs, USBs etc</div>
+                    <InputNumber style={{ width: '100%' }} min={0} value={physical} formatter={(value: any) => `${currencySymbol} ${value}`} parser={(value: any) => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v: any) => setPhysical(Number(v || 0))} />
+                </div>
+
+                <div>
                     <div style={{ marginBottom: 8 }}>Others</div>
                     <InputNumber style={{ width: '100%' }} min={0} value={others} formatter={(value: any) => `${currencySymbol} ${value}`} parser={(value: any) => String(value).replace(/[^0-9.\-]/g, '')} onChange={(v: any) => setOthers(Number(v || 0))} />
                 </div>
 
-                <div>
+                <div style={{fontWeight: 'bold'}}>
                     <div style={{ marginBottom: 8 }}>TOTAL</div>
                     <InputNumber style={{ width: '100%' }} value={total} readOnly formatter={(value: any) => `${currencySymbol} ${value}`} />
                 </div>
 
                 <div>
-                    <div style={{ marginBottom: 8 }}>Profit (Net Revenue - Budget)</div>
+                    <div style={{ marginBottom: 8 }}>Profit (Net Revenue minus Budget)</div>
                     <Text style={{ color: profit >= 0 ? 'green' : 'red' }}>{profit >= 0 ? currencySymbol + profit.toFixed(2) : currencySymbol + profit.toFixed(2)}</Text>
                 </div>
 
                 <Space style={{ marginTop: 8 }}>
                     <Button onClick={onCancel}>Cancel</Button>
-                    <Button type="primary" onClick={() => onApply({ tracks, art, mastering, others })}>Apply</Button>
+                    <Button type="primary" onClick={() => onApply({ tracks, art, mastering, physical, others })}>Apply</Button>
                 </Space>
             </Space>
         </div>

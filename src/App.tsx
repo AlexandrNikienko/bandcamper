@@ -1,7 +1,5 @@
 import { Upload } from './components/Upload';
 import { Summary } from './components/Summary';
-import { TopReleases } from './components/TopReleases';
-import { TopTracks } from './components/TopTracks';
 import { ReleasesList } from './components/ReleasesList';
 import './styles/App.css';
 import { DataProvider } from './context/DataContext';
@@ -33,13 +31,6 @@ function App() {
             <Summary />
             <div style={{ marginTop: 16 }}>
               <ReleasesList />
-            </div>
-          </section>
-
-          <section className="charts-section">
-            <div className="charts-grid">
-              <TopReleases />
-              <TopTracks />
             </div>
           </section>
         </main>
