@@ -154,7 +154,7 @@ export const ReleasesList: React.FC = () => {
                                 
 
                                 {showBudget && (<>
-                                    {totalBudget > 0 && <div className="release-info" style={{ color: profit >= 0 ? 'green' : 'red'}}>Profit: {profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</div>}
+                                    {totalBudget > 0 && <div className="release-info" style={{ color: profit >= 0 ? 'green' : 'red'}}>Income: {profit >= 0 ? '€' + profit.toFixed(2) : '€' + profit.toFixed(2)}</div>}
 
                                     <div className="release-stats">
                                         <Button className='add-budget-btn' size="small" onClick={(e) => { e.stopPropagation(); openBudget(rel.title); }}>{totalBudget > 0 ? 'Edit Budget' : 'Add Budget'}</Button>
@@ -198,7 +198,7 @@ export const ReleasesList: React.FC = () => {
 
                                     <div style={{ marginTop: 12 }}>
                                         <Text strong>Budget Total:</Text> {currencySymbolFor(rel.currency)}{totalBudget.toFixed(2)}{' '}
-                                        <Text strong style={{ marginLeft: 12 }}>Profit:</Text>
+                                        <Text strong style={{ marginLeft: 12 }}>Income:</Text>
                                         <Text style={{ color: profit >= 0 ? 'green' : 'red', marginLeft: 8 }}>{profit >= 0 ? currencySymbolFor(rel.currency) + profit.toFixed(2) : currencySymbolFor(rel.currency) + profit.toFixed(2)}</Text>
                                     </div>
                                 </div>
@@ -279,7 +279,7 @@ const BudgetForm: React.FC<{ initial: { tracks: number; art: number; mastering: 
                 </div>
 
                 <div>
-                    <div style={{ marginBottom: 8 }}>Profit (Net Revenue minus Budget)</div>
+                    <div style={{ marginBottom: 8 }}>Income (Revenue minus Budget)</div>
                     <Text style={{ color: profit >= 0 ? 'green' : 'red' }}>{profit >= 0 ? currencySymbol + profit.toFixed(2) : currencySymbol + profit.toFixed(2)}</Text>
                 </div>
 
