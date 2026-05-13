@@ -174,7 +174,8 @@
   align-items: center;
 }
 
-.full-release-stats .track-stats {
+.full-release-stats .track-stats,
+.tracks-total .track-stats {
   font-weight: 600;
   color: #333;
   font-size: 0.9375rem;
@@ -213,7 +214,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   color: #333;
 }
 
@@ -240,11 +241,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.tracks-total .track-stats {
-  font-weight: 600;
-  color: #333;
 }
 
 @media (max-width: 768px) {

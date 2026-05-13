@@ -16,7 +16,7 @@ export const Summary: React.FC = () => {
         <div className="stat-card">
           <div className="stat-icon"><TrendingUp size={40} /></div>
           <div className="stat-content">
-            <div className="stat-label">Total Sales</div>
+            <div className="stat-label">Total Digital Sales</div>
             <div className="stat-value">{summary.totalSales}</div>
           </div>
         </div>
@@ -24,7 +24,7 @@ export const Summary: React.FC = () => {
         <div className="stat-card">
           <div className="stat-icon"><Banknote size={40} /></div>
           <div className="stat-content">
-            <div className="stat-label">Total Profit</div>
+            <div className="stat-label">Total Bandcamp Income</div>
             <div className="stat-value">€{summary.totalRevenue.toFixed(2)}</div>
           </div>
         </div>

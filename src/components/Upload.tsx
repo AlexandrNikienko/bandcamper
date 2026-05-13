@@ -33,7 +33,7 @@ export const Upload: React.FC = () => {
         <UploadCloud size={40} />
         <h2>Upload Bandcamp Sales Report</h2>
         <p className="upload-description">
-          Download your sales report from the Bandcamp Tools page as a CSV file and upload it here. Parsing happens locally in your browser.
+          Download your sales report from the Bandcamp Tools page as a CSV file and upload it here.
         </p>
 
         <label className="file-input-label">

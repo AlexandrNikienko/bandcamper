@@ -83,12 +83,12 @@ export default function App() {
         </header>
 
         <main className="app-main">
-          {!user ? (
+          {/* {!user ? (
             <section className="auth-gate" style={{ padding: 40, textAlign: "center", color: "#fff" }}>
               <h2>Please sign in to enable Bandcamp income analysis</h2>
               <p>Authentication is required before the app can save data in Firebase and show your dashboard.</p>
             </section>
-          ) : (
+          ) : ( */}
             <>
               <section className="upload-section">
                 <Upload />
@@ -96,12 +96,13 @@ export default function App() {
 
               <section className="dashboard-section">
                 <Summary />
+
                 <div style={{ marginTop: 16 }}>
-                  <ReleasesList />
+                  <ReleasesList user={user} />
                 </div>
               </section>
             </>
-          )}
+          {/* )} */}
         </main>
 
         <footer className="app-footer">

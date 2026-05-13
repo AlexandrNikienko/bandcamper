@@ -4,14 +4,16 @@ import '../styles/ReleasesList.css';
 import { Button, Drawer, Typography } from 'antd';
 import 'antd/dist/reset.css';
 import { costsService } from '../services/costsService';
-import { useAuth } from '../AuthProvider';
+// import { useAuth } from '../AuthProvider';
 import { CostsForm } from './CostsForm';
+import { Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
-export const ReleasesList: React.FC = () => {
+export const ReleasesList: React.FC<{ user: any }> = ({ user }) => {
     const { releases, tracks, summary, bundles } = useData();
-    const { user } = useAuth();
+    // const { user } = useAuth();
     const currencySymbolFor = (currency?: string) => {
         if (!currency) return '€';
         const c = String(currency).trim().toUpperCase();
@@ -37,7 +39,7 @@ export const ReleasesList: React.FC = () => {
     const [bundlesExpanded, setBundlesExpanded] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
     const [editingRelease, setEditingRelease] = useState<string | null>(null);
-    const [showCosts, setshowCosts] = useState<boolean>(false);
+    const [showCosts, setShowCosts] = useState<boolean>(false);
 
     type Costs = { tracks: number; art: number; mastering: number; physical: number; others: number; physicalProfit: number };
     const [costs, setCosts] = useState<Record<string, Costs>>({});
@@ -107,7 +109,16 @@ export const ReleasesList: React.FC = () => {
         <div className="releases-container">
             <div className="releases-header">
                 <h2>Releases</h2>
-                <label>Costs <input type="checkbox" checked={showCosts} onChange={() => setshowCosts(!showCosts)} />{costsLoading && <span> (loading...)</span>}</label>
+
+                <label>
+                    Costs <input disabled={!user} type="checkbox" checked={showCosts} onChange={() => setShowCosts(!showCosts)} />
+                    {!user && (
+                        <Tooltip title="Sign in to set a release costs, which is saving to your account.">
+                            <QuestionCircleOutlined style={{ marginLeft: 6, opacity: 0.5 }} />
+                        </Tooltip>
+                    )}
+                    {costsLoading && <span> (loading...)</span>}
+                </label>
             </div>
 
             <div className="releases-grid">
@@ -187,7 +198,9 @@ export const ReleasesList: React.FC = () => {
                                         <div className="tracks-label">Full release sales</div>
 
                                         <div className="full-release-stats">
-                                            <div className="track-stats">{rel.albumSales} sales · {currencySymbolFor(rel.currency)}{rel.albumRevenue?.toFixed ? rel.albumRevenue.toFixed(2) : Number(rel.albumRevenue).toFixed(2)}</div>
+                                            <div className="track-stats">
+                                                {rel.albumSales} sales · {currencySymbolFor(rel.currency)}{rel.albumRevenue?.toFixed ? rel.albumRevenue.toFixed(2) : Number(rel.albumRevenue).toFixed(2)}
+                                            </div>
                                         </div>
                                     </div>
 
