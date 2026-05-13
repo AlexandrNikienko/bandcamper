@@ -122,3 +122,40 @@
     font-size: 1.3rem;
   }
 }
+
+/* /////// */
+.user {
+  position: absolute;
+  right: 2rem;
+  top: 2rem;
+  z-index: 10;
+}
+
+.user-avatar {
+  cursor: pointer;
+}
+
+.pulse {
+  animation: pulse 1.5s infinite;
+  background-color: #f0f0f0;
+  color: #555;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 24, 24, 0.7); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(24, 144, 255, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(24, 144, 255, 0); }
+}
+
+.ant-dropdown {
+  background: #fff;
+  border-radius: 8px;
+  min-width: 220px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.custom-dropdown b {
+  display: block;
+}

@@ -3,8 +3,16 @@ import { Summary } from './components/Summary';
 import { ReleasesList } from './components/ReleasesList';
 import './styles/App.css';
 import { DataProvider } from './context/DataContext';
+import { useAuth } from "./AuthProvider";
+import { Avatar, Button, Dropdown, Spin } from 'antd';
+import { UserOutlined, QuestionOutlined, LogoutOutlined } from "@ant-design/icons";
+import { useState } from 'react';
+import { LoginButton } from "./components/LoginButton";
 
-function App() {
+export default function App() {
+  const { user, loading: loadingUser, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+
   return (
     <DataProvider>
       <div className="app">
@@ -20,19 +28,80 @@ function App() {
             </h1>
             <p>Analyze your Bandcamp sales performance</p>
           </div>
+          
+          <div className="user">
+            {loadingUser ? (
+              <Spin />
+            ) : (
+              <Dropdown
+                arrow
+                trigger={["click"]}
+                open={open}
+                onOpenChange={setOpen}
+                placement="bottomRight"
+                popupRender={() => (
+                  <div className="custom-dropdown">
+                    {user ? (
+                      <>
+                        <div className="mb8">
+                          <b>Welcome, {user.displayName}</b>
+                          <span>{user.email}</span>
+                        </div>
+                        
+                        <Button
+                          block
+                          danger
+                          type="primary"
+                          icon={<LogoutOutlined />}
+                          onClick={() => {
+                            logout();
+                            setOpen(false);
+                          }}
+                        >
+                          Logout
+                        </Button>
+                      </>
+                    ) : (
+                      <div>
+                        Please, <LoginButton />
+                        <br />
+                        to activate the functionality
+                      </div>
+                    )}
+                  </div>
+                )}
+              >
+                <Avatar
+                  size={"large"}
+                  className={`user-avatar ${!user ? "pulse" : ""}`}
+                  src={user?.photoURL || (user ? null : undefined)}
+                  icon={!user ? <QuestionOutlined /> : (!user?.photoURL && <UserOutlined />)}
+                />
+              </Dropdown>
+            )}
+          </div>
         </header>
 
         <main className="app-main">
-          <section className="upload-section">
-            <Upload />
-          </section>
+          {!user ? (
+            <section className="auth-gate" style={{ padding: 40, textAlign: "center", color: "#fff" }}>
+              <h2>Please sign in to enable Bandcamp income analysis</h2>
+              <p>Authentication is required before the app can save data in Firebase and show your dashboard.</p>
+            </section>
+          ) : (
+            <>
+              <section className="upload-section">
+                <Upload />
+              </section>
 
-          <section className="dashboard-section">
-            <Summary />
-            <div style={{ marginTop: 16 }}>
-              <ReleasesList />
-            </div>
-          </section>
+              <section className="dashboard-section">
+                <Summary />
+                <div style={{ marginTop: 16 }}>
+                  <ReleasesList />
+                </div>
+              </section>
+            </>
+          )}
         </main>
 
         <footer className="app-footer">
@@ -43,4 +112,3 @@ function App() {
   );
 }
 
-export default App;
