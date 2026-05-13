@@ -2,6 +2,7 @@ import React from 'react';
 import { useData } from '../context/DataContext';
 import { TrendingUp, Banknote } from 'lucide-react';
 import '../styles/Summary.css';
+import { formatMoney } from '../utils/utils';
 
 export const Summary: React.FC = () => {
   const { summary } = useData();
@@ -25,7 +26,7 @@ export const Summary: React.FC = () => {
           <div className="stat-icon"><Banknote size={40} /></div>
           <div className="stat-content">
             <div className="stat-label">Total Bandcamp Income</div>
-            <div className="stat-value">€{summary.totalRevenue.toFixed(2)}</div>
+            <div className="stat-value">{formatMoney(summary.totalRevenue, '€')}</div> {/* TODO */}
           </div>
         </div>
 
