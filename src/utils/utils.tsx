@@ -1,13 +1,12 @@
-export type Costs = {
-    tracks: number;
-    art: number;
-    mastering: number;
-    physical: number;
-    others: number;
-    physicalProfit: number;
-};
+import { Costs } from "../types/sales";
 
 export const EMPTY_COSTS: Costs = { tracks: 0, art: 0, mastering: 0, others: 0, physical: 0, physicalProfit: 0 };
+
+export const calcReleaseProfit = (totalRevenue: number, costs: Costs) => {
+    const totalReleaseCosts = costs.tracks + costs.art + costs.mastering + costs.others + costs.physical;
+    const profit = totalRevenue - totalReleaseCosts + costs.physicalProfit;
+    return { totalReleaseCosts, profit };
+};
 
 export const formatMoney = (value: number, symbol: string) =>
     `${symbol}${value.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

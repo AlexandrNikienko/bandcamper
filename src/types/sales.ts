@@ -32,3 +32,12 @@ export interface SalesSummary {
   bundleSales?: number;
   bundleRevenue?: number;
 }
+
+export type Costs = {
+    tracks: number;
+    art: number;
+    mastering: number;
+    physical: number;
+    others: number;
+    physicalProfit: number;
+};

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, InputNumber, Space, Typography } from 'antd';
-import { formatMoney, Costs, EMPTY_COSTS } from '../utils/utils';
+import { formatMoney, EMPTY_COSTS } from '../utils/utils';
+import { Costs } from '../types/sales';
 
 const { Text } = Typography;
 

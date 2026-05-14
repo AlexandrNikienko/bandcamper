@@ -7,7 +7,7 @@ import { costsService } from '../services/costsService';
 import { CostsForm } from './CostsForm';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { currencySymbolFor, formatMoney, Costs, EMPTY_COSTS } from '../utils/utils';
+import { currencySymbolFor, formatMoney, Costs, EMPTY_COSTS, calcReleaseProfit } from '../utils/utils';
 
 export const ReleasesList: React.FC<{ user: any }> = ({ user }) => {
     const { releases, tracks, summary, bundles } = useData();
@@ -149,8 +149,7 @@ export const ReleasesList: React.FC<{ user: any }> = ({ user }) => {
 
                 {sortedReleases.map((rel: any) => {
                     const releaseCosts = costs[rel.title] ?? EMPTY_COSTS;
-                    const totalReleaseCosts = Number(releaseCosts.tracks || 0) + Number(releaseCosts.art || 0) + Number(releaseCosts.mastering || 0) + Number(releaseCosts.others || 0) + Number(releaseCosts.physical || 0);
-                    const profit = Number(rel.totalRevenue || 0) - totalReleaseCosts + Number(releaseCosts.physicalProfit || 0);
+                    const { totalReleaseCosts, profit } = calcReleaseProfit(Number(rel.totalRevenue || 0), releaseCosts);
 
                     return (
                         <div key={rel.title} className={`release-card ${expanded[rel.title] ? 'expanded' : ''}`}>

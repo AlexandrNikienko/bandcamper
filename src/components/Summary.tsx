@@ -2,7 +2,7 @@ import React from 'react';
 import { useData } from '../context/DataContext';
 import { TrendingUp, Banknote } from 'lucide-react';
 import '../styles/Summary.css';
-import { formatMoney } from '../utils/utils';
+import { currencySymbolFor, formatMoney } from '../utils/utils';
 
 export const Summary: React.FC = () => {
   const { summary } = useData();
@@ -26,33 +26,17 @@ export const Summary: React.FC = () => {
           <div className="stat-icon"><Banknote size={40} /></div>
           <div className="stat-content">
             <div className="stat-label">Total Bandcamp Income</div>
-            <div className="stat-value">{formatMoney(summary.totalRevenue, '€')}</div> {/* TODO */}
+            <div className="stat-value">{formatMoney(summary.totalRevenue, currencySymbolFor(summary.currency))}</div> {/* TODO */}
           </div>
         </div>
-
-        {/* <div className="stat-card">
-          <div className="stat-icon">💿</div>
-          <div className="stat-content">
-            <div className="stat-label">Releases</div>
-            <div className="stat-value">{summary.releaseCount}</div>
-          </div>
-        </div> */}
-
-        {/* <div className="stat-card">
-          <div className="stat-icon">🎵</div>
-          <div className="stat-content">
-            <div className="stat-label">Tracks</div>
-            <div className="stat-value">{summary.trackCount}</div>
-          </div>
-        </div> */}
       </div>
 
-      {/* <div className="highlights">
+      <div className="highlights">
         {summary.topRelease && (
           <div className="highlight-card">
             <h3>🏆 Top Release</h3>
             <p className="highlight-title">{summary.topRelease.title}</p>
-            <p className="highlight-stat">{summary.topRelease.totalSales} sales · ${summary.topRelease.totalRevenue.toFixed(2)}</p>
+            <p className="highlight-stat">{summary.topRelease.totalSales} sales · {formatMoney(summary.topRelease.totalRevenue, currencySymbolFor(summary.currency))}</p>
           </div>
         )}
 
@@ -60,11 +44,11 @@ export const Summary: React.FC = () => {
           <div className="highlight-card">
             <h3>⭐ Top Track</h3>
             <p className="highlight-title">{summary.topTrack.title}</p>
-            <p className="highlight-stat">{summary.topTrack.sales} sales · ${summary.topTrack.revenue.toFixed(2)}</p>
+            <p className="highlight-stat">{summary.topTrack.sales} sales · {formatMoney(summary.topTrack.revenue, currencySymbolFor(summary.currency))}</p>
             <p className="highlight-release">from "{summary.topTrack.releaseTitle}"</p>
           </div>
         )}
-      </div> */}
+      </div>
     </div>
   );
 };
