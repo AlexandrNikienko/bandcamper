@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Button, InputNumber, Space, Typography } from 'antd';
+import { Button, InputNumber, Space, Tooltip, Typography } from 'antd';
 import { formatMoney, EMPTY_COSTS } from '../utils/utils';
 import { Costs } from '../types/sales';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
@@ -55,8 +56,7 @@ export const CostsForm: React.FC<CostsFormProps> = ({
     };
 
     return (
-        <Space direction="vertical" style={{ width: '100%' }}>
-
+        <Space direction="vertical" size={12} style={{ width: '100%' }}>
             {COST_FIELDS.map(({ key, label }) => (
                 <div key={key}>
                     <div style={{ marginBottom: 8 }}>{label}</div>
@@ -99,7 +99,11 @@ export const CostsForm: React.FC<CostsFormProps> = ({
 
             <div style={{ fontWeight: 'bold' }}>
                 <div style={{ marginBottom: 8 }}>
-                    TOTAL Income = Bandcamp Income − TOTAL Costs + Income from physical sales
+                    TOTAL Income 
+
+                    <Tooltip title="Bandcamp Net Income − TOTAL Costs + Income from physical sales">
+                        <QuestionCircleOutlined style={{ marginLeft: 6, opacity: 0.5 }} />
+                    </Tooltip>
                 </div>
 
                 <Text style={{ color: totalIncome >= 0 ? 'green' : 'red' }}>

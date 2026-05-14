@@ -25,7 +25,7 @@ export const Summary: React.FC = () => {
         <div className="stat-card">
           <div className="stat-icon"><Banknote size={40} /></div>
           <div className="stat-content">
-            <div className="stat-label">Total Bandcamp Income</div>
+            <div className="stat-label">Total Bandcamp Net Income</div>
             <div className="stat-value">{formatMoney(summary.totalRevenue, currencySymbolFor(summary.currency))}</div> {/* TODO */}
           </div>
         </div>
