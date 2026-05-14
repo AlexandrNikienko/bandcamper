@@ -149,7 +149,7 @@ export const ReleasesList: React.FC<{ user: any }> = ({ user }) => {
                 )}
 
                 {sortedReleases.map((rel: any) => {
-                    const releaseCosts = costs[rel.title] ?? EMPTY_COSTS;
+                    const releaseCosts: Costs = costs[rel.title] ?? EMPTY_COSTS;
                     const { totalReleaseCosts, profit } = calcReleaseProfit(Number(rel.totalRevenue || 0), releaseCosts);
 
                     return (
@@ -173,7 +173,7 @@ export const ReleasesList: React.FC<{ user: any }> = ({ user }) => {
                                 {showCosts && (<>
                                     {(totalReleaseCosts > 0 || releaseCosts.physicalProfit !== 0) && 
                                     <div className="release-info" style={{ color: profit >= 0 ? 'green' : 'red'}}>
-                                        Income: {formatMoney(profit, currencySymbolFor(rel.currency))}
+                                        Income: {formatMoney(Number(profit), currencySymbolFor(rel.currency))}
                                     </div>}
 
                                     <div className="release-stats">

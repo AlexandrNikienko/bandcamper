@@ -4,7 +4,7 @@ export const EMPTY_COSTS: Costs = { tracks: 0, art: 0, mastering: 0, others: 0, 
 
 export const calcReleaseProfit = (totalRevenue: number, costs: Costs) => {
     const totalReleaseCosts = costs.tracks + costs.art + costs.mastering + costs.others + costs.physical;
-    const profit = totalRevenue - totalReleaseCosts + costs.physicalProfit;
+    const profit = Number(totalRevenue || 0) - totalReleaseCosts + Number(costs.physicalProfit || 0);
     return { totalReleaseCosts, profit };
 };
 

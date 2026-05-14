@@ -91,7 +91,7 @@ export const CostsForm: React.FC<CostsFormProps> = ({
                 <InputNumber
                     style={{ width: '100%' }}
                     value={costs.physicalProfit}
-                    formatter={(value: any) => formatMoney(Number(value || 0), currencySymbol)}
+                    formatter={(value: any) => `${currencySymbol} ${value}`}
                     parser={parseMoney}
                     onChange={setField('physicalProfit')}
                 />
