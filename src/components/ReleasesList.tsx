@@ -7,7 +7,8 @@ import { costsService } from '../services/costsService';
 import { CostsForm } from './CostsForm';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { currencySymbolFor, formatMoney, Costs, EMPTY_COSTS, calcReleaseProfit } from '../utils/utils';
+import { currencySymbolFor, formatMoney, EMPTY_COSTS, calcReleaseProfit } from '../utils/utils';
+import { Costs } from '../types/sales';
 
 export const ReleasesList: React.FC<{ user: any }> = ({ user }) => {
     const { releases, tracks, summary, bundles } = useData();
